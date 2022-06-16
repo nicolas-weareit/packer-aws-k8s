@@ -11,7 +11,7 @@ source "amazon-ebs" "ubuntu" {
   ami_name          = "${ var.ami_name }"
   ami_description   = "${ var.ami_description }"
   instance_type     = "t2.micro"
-  region            = "${ aws_region }"
+  region            = "${ var.aws_region }"
   tags              = {
       OS_VERSION = "Ubuntu"
       Release = "Latest"
