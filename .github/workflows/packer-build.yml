@@ -1,0 +1,40 @@
+---
+name: Packer build
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  packer_build:
+    runs-on: ubuntu-latest
+    name: packer
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        
+      - name: Validate Template
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: validate
+          arguments: -syntax-only
+          target: aws-bastion-ubuntu.pkr.hcl
+      
+      - name: Init packer modules
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: init
+          target: aws-bastion-ubuntu.pkr.hcl
+
+      - name: Build Artifact
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: build
+          arguments: "-color=false -on-error=abort -force"
+          target: .
+        env:
+          #PACKER_LOG: 1
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESSKEY_ID_PERSO }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESSKEY_SECRET_PERSO }}
+          PKR_VAR_ssh_private_key: ${{ secrets.K8S_LAB_SSH_PRIVATE_KEY }}
+          PKR_VAR_version_number: ${{ github.ref_name }}
+
