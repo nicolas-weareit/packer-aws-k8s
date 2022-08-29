@@ -25,7 +25,7 @@ jobs:
           command: init
           target: kube-servers.pkr.hcl
 
-      - name: Build Artifact
+      - name: Build Artifact on perso tenant
         uses: hashicorp/packer-github-actions@master
         with:
           command: build
@@ -35,5 +35,17 @@ jobs:
           #PACKER_LOG: 1
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESSKEY_ID_PERSO }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESSKEY_SECRET_PERSO }}
+          PKR_VAR_version_number: ${{ github.ref_name }}
+      
+      - name: Build Artifact on weare tenant
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: build
+          arguments: "-color=false -on-error=abort -force"
+          target: .
+        env:
+          #PACKER_LOG: 1
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_ID_WEARE }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET_WEARE }}
           PKR_VAR_version_number: ${{ github.ref_name }}
 
